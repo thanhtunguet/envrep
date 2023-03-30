@@ -1,0 +1,4 @@
+input.txt
+cmake-build-debug
+.env
+.idea/
