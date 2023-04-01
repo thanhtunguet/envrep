@@ -16,8 +16,9 @@ jobs:
           sudo apt-get install -y dpkg-dev
           mkdir -p envrep-deb
           cd envrep-deb
+          mkdir usr/local/src
           mkdir -p usr/local/bin
-          cp ../main.cpp usr/local/bin/envrep
+          cp ../main.cpp usr/local/src/envrep.cpp
           cp -r ../DEBIAN/ ./DEBIAN
           cd ..
           dpkg-deb --build envrep-deb

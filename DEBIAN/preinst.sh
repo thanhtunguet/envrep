@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 if dpkg -s build-essential >/dev/null 2>&1; then
   echo "build-essential is already installed"
 else
@@ -7,7 +10,11 @@ else
   sudo apt-get install -y build-essential
 fi
 
-cd /usr/local/bin/
-mv envrep envrep.cpp
-g++ envrep.cpp -o envrep
-chmod a+x envrep
+# Biên dịch tệp nguồn C++
+g++ -o /usr/local/bin/envrep /usr/local/src/envrep.cpp
+rm -rf /usr/local/src/envrep.cpp
+
+# Phân quyền cho tệp thực thi
+chmod +x /usr/local/bin/envrep
+
+exit 0
