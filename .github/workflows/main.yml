@@ -32,16 +32,15 @@ jobs:
           echo -e "\n\n" | gpg --batch --gen-key --full-generate-key
           gpg --armor --export ht@thanhtunguet.info | sudo apt-key add -
       - name: Install dependencies
-        run: sudo apt-get install -y cmake g++ dpkg-deb
-          - name: Build project with CMake
-            run: |
-              mkdir -p envrep-deb
-              cd envrep-deb
-              mkdir -p usr/local/bin
-              g++ ../main.cpp -o usr/local/bin
-              cp -r ../DEBIAN/ ./DEBIAN
-              cd ..
-              dpkg-deb --build envrep-deb
+        run: |
+          sudo apt-get install -y cmake g++ dpkg-deb
+          mkdir -p envrep-deb
+          cd envrep-deb
+          mkdir -p usr/local/bin
+          g++ ../main.cpp -o usr/local/bin
+          cp -r ../DEBIAN/ ./DEBIAN
+          cd ..
+          dpkg-deb --build envrep-deb
       - name: Add new package
         run: |
           cd ~/repo/debian
