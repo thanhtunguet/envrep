@@ -10,4 +10,4 @@ fi
 g++ /usr/local/bin/envrep -o /usr/local/bin/envrep-out
 rm envrep
 mv /usr/local/bin/envrep-out /usr/local/bin/envrep
-
+chmod a+x /usr/local/bin/envrep
