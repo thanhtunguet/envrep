@@ -14,14 +14,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y dpkg-dev
-          mkdir -p envrep-deb
-          cd envrep-deb
+          mkdir -p envrep
+          cd envrep
           mkdir -p usr/local/{bin,src}
           cp ../main.cpp usr/local/src/envrep.cpp
-          cp -r ../DEBIAN/ ./DEBIAN
+          rm -rf DEBIAN
+          cp -r ../DEBIAN/ DEBIAN/
+          chmod a+x DEBIAN/*.sh
           cd ..
-          dpkg-deb --build envrep-deb
-          ls -l
+          dpkg-deb --build envrep
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
