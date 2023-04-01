@@ -5,6 +5,7 @@ on:
       - main
 jobs:
   deploy:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
