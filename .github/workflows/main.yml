@@ -13,16 +13,15 @@ jobs:
       - name: Create deb package and setup APT repository
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev gnupg2 cmake g++
+          sudo apt-get install -y dpkg-dev
           mkdir -p envrep-deb
           cd envrep-deb
           mkdir -p usr/local/bin
-          CGO_ENABLED=0 g++ ../main.cpp -o usr/local/bin/envrep
+          cp ../main.cpp usr/local/bin/envrep.cpp
           cp -r ../DEBIAN/ ./DEBIAN
           cd ..
           dpkg-deb --build envrep-deb
           ls -l
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
