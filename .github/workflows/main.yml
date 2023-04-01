@@ -1,16 +1,55 @@
-name: Build C++ project with CMake
-on: [push, pull_request]
-
+name: Deploy to gh-pages
+on:
+  push:
+    branches:
+      - main
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: sudo apt-get install -y cmake g++
-    - name: Build project with CMake
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: Set up APT repository
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev gnupg2
+          mkdir -p ~/repo/debian/{conf,incoming,logs,pool}
+          cd ~/repo/debian
+          dpkg-scanpackages -m pool | gzip -9c > dists/main/binary-amd64/Packages.gz
+          echo "deb [trusted=yes] file:$(pwd) ./" | sudo tee /etc/apt/sources.list.d/local-apt.list
+          gpg --batch --gen-key <<EOF
+            %echo Generating a basic OpenPGP key
+            Key-Type: RSA
+            Key-Length: 4096
+            Name-Real: APT Repository
+            Name-Email: ht@thanhtunguet.info
+            Expire-Date: 0
+            Passphrase: 1
+            %commit
+            %echo done
+          EOF
+          export GPG_TTY=$(tty)
+          echo -e "\n\n" | gpg --batch --gen-key --full-generate-key
+          gpg --armor --export ht@thanhtunguet.info | sudo apt-key add -
+      - name: Install dependencies
+        run: sudo apt-get install -y cmake g++ dpkg-deb
+          - name: Build project with CMake
+            run: |
+              mkdir -p envrep-deb
+              cd envrep-deb
+              mkdir -p usr/local/bin
+              g++ ../main.cpp -o usr/local/bin
+              cp -r ../DEBIAN/ ./DEBIAN
+              cd ..
+              dpkg-deb --build envrep-deb
+      - name: Add new package
+        run: |
+          cd ~/repo/debian
+          mv envrep-deb.deb ~/repo/debian/pool/
+          dpkg-scanpackages -m pool | gzip -9c > dists/main/binary-amd64/Packages.gz
+          echo "Package added."
+      - name: Push changes to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
+          publish_dir: ~/repo/debian
