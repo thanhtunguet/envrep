@@ -4,26 +4,23 @@ on:
     tags:
       - '*'
 jobs:
-  deploy:
-    permissions: write-all
+  permission: write-all
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v2
-      - name: Create deb package and setup APT repository
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y dpkg-dev
-          mkdir -p envrep
-          cd envrep
-          mkdir -p usr/local/{bin,src}
-          cp ../main.cpp usr/local/src/envrep.cpp
-          rm -rf DEBIAN
-          cp -r ../DEBIAN/ DEBIAN/
-          chmod a+x DEBIAN/*.sh
-          cd ..
-          dpkg-deb --build envrep
-      - name: Create Release
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y g++
+      - name: Build
+        run: g++ -o envrep main.cpp
+      - name: Package
+        run: fakeroot dpkg-deb --build envrep
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: envrep.deb
+          path: envrep.deb
+      - name: Create GitHub release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -43,9 +40,3 @@ jobs:
           asset_path: ./envrep.deb
           asset_name: envrep.deb
           asset_content_type: application/zip
-
-      - name: Push changes to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./

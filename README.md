@@ -18,7 +18,7 @@ mv envrep /usr/local/bin/envrep
 ## Run the script
 
 ```bash
-envrep filename.config
+envrep file1.config file2.config file3.config
 ```
 
 ## Syntax

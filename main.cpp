@@ -11,47 +11,55 @@ int main(int argc, char **argv) {
         cout << "Missing file path parameter" << endl;
         return 1;
     }
-    string filename(argv[1]);
-    string outputString;
 
-    string variableFormat = "\\{([A-Z_]+)\\}"; // regex pattern to match the variable format
-    regex variableRegex(variableFormat);
+    for (int i = 1; i < argc; i++) {
+        string filename(argv[i]);
+        string outputString;
 
-    ifstream inputFile(filename);
+        string variableFormat = "\\{([A-Z_]+)\\}"; // regex pattern to match the variable format
+        regex variableRegex(variableFormat);
 
-    if (!inputFile.is_open()) {
-        cout << "Could not open file " << filename << endl;
-        return 2;
-    }
+        ifstream inputFile(filename);
 
-    string line;
-    while (getline(inputFile, line)) {
-        smatch matches;
-
-        bool hasMatches = regex_search(line, matches, variableRegex);
-
-        while (hasMatches) {
-            string matchedString(matches[0]);
-            string environmentVariableName = regex_replace(matchedString, variableRegex, "$1");
-            cout << "Found environment placeholder for: " << environmentVariableName << endl;
-            auto environmentVariable = getenv(environmentVariableName.c_str());
-            if (environmentVariable != nullptr) {
-                string value(environmentVariable);
-                line.replace(line.find(matchedString), matchedString.size(), value);
-            } else {
-                cout << "Missing environment variable: " << environmentVariableName << endl;
-            }
-
-            hasMatches = regex_search(line, matches, variableRegex);
+        if (!inputFile.is_open()) {
+            cout << "Could not open file " << filename << endl;
+            return 2;
         }
 
-        outputString += line + "\n";
+        string line;
+        bool hasError = false;
+        while (getline(inputFile, line)) {
+            smatch matches;
+            bool hasMatches = regex_search(line, matches, variableRegex);
+            while (hasMatches) {
+                string matchedString(matches[0]);
+                string environmentVariableName = regex_replace(matchedString, variableRegex, "$1");
+                cout << "Found environment placeholder for: " << environmentVariableName << endl;
+                auto environmentVariable = getenv(environmentVariableName.c_str());
+                if (environmentVariable != nullptr) {
+                    string value(environmentVariable);
+                    line.replace(line.find(matchedString), matchedString.size(), value);
+                } else {
+                    hasError = true;
+                    cout << "Missing environment variable: " << environmentVariableName << endl;
+                }
+
+                hasMatches = regex_search(line, matches, variableRegex);
+            }
+            outputString += line + "\n";
+        }
+
+        inputFile.close();
+
+        if (hasError) {
+            return 1;
+        }
+
+        ofstream outputFile(filename);
+        outputFile << outputString;
+        outputFile.close();
+        cout << "Done." << endl;
     }
 
-    inputFile.close();
-    ofstream outputFile(filename);
-    outputFile << outputString;
-    outputFile.close();
-    cout << "Done." << endl;
     return 0;
 }
