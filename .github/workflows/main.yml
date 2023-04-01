@@ -1,8 +1,8 @@
-name: Deploy to gh-pages
+name: Release deb file
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 jobs:
   deploy:
     permissions: write-all
@@ -29,8 +29,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0
-          body: This is the first release.
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: Latest release version for envrep.deb
 
       - name: Upload Release Asset
         id: upload-release-asset
