@@ -17,7 +17,7 @@ jobs:
           mkdir -p envrep-deb
           cd envrep-deb
           mkdir -p usr/local/bin
-          cp ../main.cpp usr/local/bin/envrep.cpp
+          cp ../main.cpp usr/local/bin/envrep
           cp -r ../DEBIAN/ ./DEBIAN
           cd ..
           dpkg-deb --build envrep-deb

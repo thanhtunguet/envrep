@@ -7,5 +7,7 @@ else
   sudo apt-get install -y build-essential
 fi
 
-g++ envrep.cpp -o /usr/local/bin/envrep
-rm envrep.cpp
+g++ /usr/local/bin/envrep -o /usr/local/bin/envrep-out
+rm envrep
+mv /usr/local/bin/envrep-out /usr/local/bin/envrep
+
