@@ -5,4 +5,3 @@ Priority: optional
 Architecture: amd64
 Maintainer: ht@thanhtunguet.info
 Description: Replace environment variable in Configuration files, deploy on Kubernetes and Docker. Currently support `amd64` only.
-

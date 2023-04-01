@@ -9,17 +9,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y g++
+
       - name: Build
-        run: g++ -o envrep main.cpp
+        run: |
+          mkdir -p envrep/usr/local/{src,bin}
+          cp main.cpp envrep/usr/local/src/envrep.cpp
+          g++ -o envrep/envrep main.cpp
+
       - name: Package
         run: fakeroot dpkg-deb --build envrep
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: envrep.deb
           path: envrep.deb
+
       - name: Create GitHub release
         id: create_release
         uses: actions/create-release@v1
