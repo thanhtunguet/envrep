@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Install dependencies
+      - name: Create deb package and setup APT repository
         run: |
           sudo apt-get update
           sudo apt-get install -y dpkg-dev gnupg2 cmake g++
@@ -23,10 +23,9 @@ jobs:
           ls -l
           mkdir -p repo/debian/{conf,incoming,logs,pool}
           mv envrep-deb.deb repo/debian/pool/
-          dpkg-scanpackages -m pool | gzip -9c > dists/main/binary-amd64/Packages.gz
-          echo "Package added." 
           cd repo/debian
           dpkg-scanpackages -m pool | gzip -9c > dists/main/binary-amd64/Packages.gz
+          echo "Package added." 
           echo "deb [trusted=yes] file:$(pwd) ./" | sudo tee /etc/apt/sources.list.d/local-apt.list
           gpg --batch --gen-key <<EOF
             %echo Generating a basic OpenPGP key
