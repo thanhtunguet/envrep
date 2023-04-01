@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          sudo apt-get install -y cmake g++ dpkg-deb
+          sudo apt-get install -y cmake g++ dpkg-dev
           mkdir -p envrep-deb
           cd envrep-deb
           mkdir -p usr/local/bin
