@@ -19,6 +19,7 @@ jobs:
           cp -r ../DEBIAN/ ./DEBIAN
           cd ..
           dpkg-deb --build envrep-deb
+          ls -l
       - name: Add new package
         run: |
           mkdir -p ~/repo/debian
