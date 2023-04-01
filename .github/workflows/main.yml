@@ -21,7 +21,7 @@ jobs:
           dpkg-deb --build envrep-deb
       - name: Add new package
         run: |
-          mkdir ~/repo/debian
+          mkdir -p ~/repo/debian
           cd ~/repo/debian
           mv envrep-deb.deb ~/repo/debian/pool/
           dpkg-scanpackages -m pool | gzip -9c > dists/main/binary-amd64/Packages.gz
